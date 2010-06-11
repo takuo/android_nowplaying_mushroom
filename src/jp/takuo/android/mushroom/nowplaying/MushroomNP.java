@@ -42,12 +42,11 @@ public class MushroomNP extends Activity implements OnClickListener {
     private Button mButtonRefresh;
     private EditText mEditFormat;
     private TextView mTextView;
-    private String mNowPlaying = "";
     private String mFormatString;
 
-    private void replace() {
+    private void replace(String str) {
         Intent out = new Intent(ACTION_INTERCEPT);
-        out.putExtra("replace_key", mNowPlaying);
+        out.putExtra("replace_key", str);
         setResult(RESULT_OK, out);
     }
     
@@ -127,13 +126,13 @@ public class MushroomNP extends Activity implements OnClickListener {
     @Override
     public void onClick(View v) {
         if (v == mButtonOK)
-            replace();
+            replace(mTextView.getText().toString());
         if (v == mButtonOK || v == mButtonCancel)
             finish();
         if (v == mButtonRefresh) {
             mFormatString = mEditFormat.getText().toString();
             PreferenceManager.getDefaultSharedPreferences(
-                getApplicationContext()).edit().putString(PREFS_FORMAT_STRING, mFormatString);
+                getApplicationContext()).edit().putString(PREFS_FORMAT_STRING, mFormatString).commit();
             Log.d(LOG_TAG, "Format: " + mFormatString);
             mTextView.setText(((MediaServiceConnection)mConn).getFormattedString(mFormatString));
             // Toast.makeText(this, "update...", 500).show();
