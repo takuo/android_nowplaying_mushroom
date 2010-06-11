@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/**
+ * Copyright (c) 2010, Takuo Kitame (http://bit.ly/northeye)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:gravity="center|center_horizontal"
+    android:fitsSystemWindows="true"
+    android:layout_height="fill_parent">
+    <RelativeLayout android:id="@+id/RelativeLayout01"
+                    android:fitsSystemWindows="true"
+                    android:layout_height="fill_parent"
+                    android:layout_width="fill_parent">
+        <TableLayout android:id="@+id/TableLayout01"
+                     android:stretchColumns="1"
+                     android:shrinkColumns="1"
+                     android:layout_width="fill_parent"
+                     android:layout_height="wrap_content"
+                     android:layout_centerHorizontal="true"
+                     android:layout_centerVertical="false">
+            <TableRow android:id="@+id/TableRow02"
+                      android:layout_width="fill_parent"
+                      android:layout_height="fill_parent">
+                <EditText android:layout_width="fill_parent"
+                          android:layout_height="fill_parent"
+                          android:layout_column="0"
+                          android:layout_span="3"
+                          android:id="@+id/edit_format" />
+                <Button android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/btn_refresh"
+                        android:id="@+id/btn_refresh" />
+            </TableRow>
+            <TableRow android:id="@+id/TableRow01"
+                      android:layout_width="fill_parent"
+                      android:layout_height="fill_parent">
+                <Button android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:layout_weight="1"
+                        android:layout_column="0"
+                        android:layout_span="2"
+                        android:id="@+id/btn_ok"
+                        android:text="@string/btn_ok" />
+                <Button android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:layout_weight="1"
+                        android:layout_column="1"
+                        android:layout_span="1"
+                        android:id="@+id/btn_cancel"
+                        android:text="@string/btn_cancel" />
+            </TableRow>
+            <TableRow android:id="@+id/TableRow03"
+                      android:layout_width="fill_parent"
+                      android:layout_height="wrap_content">
+                <TextView android:layout_width="fill_parent"
+                          android:layout_height="wrap_content"
+                          android:layout_span="4"
+                          android:id="@+id/text_now_playing" />
+            </TableRow>
+        </TableLayout>
+    </RelativeLayout>
+</LinearLayout>
