@@ -2,7 +2,7 @@ package jp.takuo.android.mushroom.nowplaying;
 
 /**
 
- * Copyright (c) 2010, Takuo Kitame (http://bit.ly/northeye)
+ * Copyright (c) 2011, Takuo Kitame (http://takuo.jp/)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,10 @@ package jp.takuo.android.mushroom.nowplaying;
  */
 
 import android.app.Activity;
-import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -35,8 +34,7 @@ public class MushroomNP extends Activity implements OnClickListener {
     private static final String DEFAULT_FORMAT_STRING = "#NowPlaying %t - %a";
     private static final String LOG_TAG = "MushroomNP";
     private static final String ACTION_INTERCEPT = "com.adamrocker.android.simeji.ACTION_INTERCEPT";
-    private String mAction;
-    private ServiceConnection mConn;
+    private static SharedPreferences mPrefs;
     private Button mButtonOK;
     private Button mButtonCancel;
     private Button mButtonRefresh;
@@ -53,23 +51,17 @@ public class MushroomNP extends Activity implements OnClickListener {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mConn != null) unbindService(mConn);
     }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+        mPrefs = getSharedPreferences("nowplaying", Context.MODE_PRIVATE);
         mFormatString = 
             PreferenceManager.getDefaultSharedPreferences(
                 getApplicationContext()).getString(
                     PREFS_FORMAT_STRING, DEFAULT_FORMAT_STRING);
-        Intent it = getIntent();
-        mAction = it.getAction();
-
-        mConn = new MediaServiceConnection();
-        bindService(new Intent().setClassName("com.android.music",
-                                              "com.android.music.MediaPlaybackService"),
-                    mConn, 0);
+        
         MushroomNP.this.setContentView(R.layout.main);
         mButtonOK = (Button)findViewById(R.id.btn_ok);
         mButtonCancel = (Button)findViewById(R.id.btn_cancel);
@@ -77,50 +69,25 @@ public class MushroomNP extends Activity implements OnClickListener {
         mEditFormat = (EditText)findViewById(R.id.edit_format);
         mEditFormat.setText(mFormatString);
         mTextView = (TextView)findViewById(R.id.text_now_playing);
-/*
-        if (mAction != null && ACTION_INTERCEPT.equals(mAction)) {
 
-        } else {
-
-        }
-*/
         mButtonOK.setOnClickListener(this);
         mButtonCancel.setOnClickListener(this);
         mButtonRefresh.setOnClickListener(this);
+        mTextView.setText(getFormattedString(mFormatString));
     }
-
-    public class MediaServiceConnection implements ServiceConnection {
-        private com.android.music.IMediaPlaybackService mService;
-
-        public String getFormattedString(String format) {
-            String ret;
-            ret = format.replace("%%", "%");
-            try {
-                if (mService.isPlaying()) {
-                    ret = ret.replace("%a", mService.getArtistName());
-                    ret = ret.replace("%t", mService.getTrackName());
-                    ret = ret.replace("%l", mService.getAlbumName());
-                } else {
-                    ret = "Not Playing";
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                ret = "Error!!";
-              }
+    
+    private String getFormattedString(String format) {
+        String ret;
+         ret = format.replace("%%", "%");
+         if (mPrefs.getBoolean("playstate", false)){
+             ret = ret.replace("%a", mPrefs.getString("artist", "unknown"));
+             ret = ret.replace("%t", mPrefs.getString("track", "unknown"));
+             ret = ret.replace("%l", mPrefs.getString("album", "unknown'"));
+         } else {
+             ret = "Not Playing";
+         }
             Log.d(LOG_TAG, "Return value: " + ret);
             return ret;
-        }
-
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            mService = com.android.music.IMediaPlaybackService.Stub.asInterface(service);
-            mTextView.setText(getFormattedString(mFormatString));
-        }
-
-       @Override
-       public void onServiceDisconnected(ComponentName name) {
-           Log.d(LOG_TAG, "Disconnected Serivice");
-        }
     }
 
     @Override
@@ -134,8 +101,7 @@ public class MushroomNP extends Activity implements OnClickListener {
             PreferenceManager.getDefaultSharedPreferences(
                 getApplicationContext()).edit().putString(PREFS_FORMAT_STRING, mFormatString).commit();
             Log.d(LOG_TAG, "Format: " + mFormatString);
-            mTextView.setText(((MediaServiceConnection)mConn).getFormattedString(mFormatString));
-            // Toast.makeText(this, "update...", 500).show();
+            mTextView.setText(getFormattedString(mFormatString));
         }
     }
 }
